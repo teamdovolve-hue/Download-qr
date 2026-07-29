@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Pizza Hut & Live Cake - Table QR Codes</title>
+    <!-- Google Fonts for clean typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- QRCodeJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+
+        .no-print {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .print-btn {
+            background-color: #013a20;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: 0.3s ease;
+        }
+
+        .print-btn:hover {
+            background-color: #025c31;
+            transform: translateY(-2px);
+        }
+
+        /* Poster Grid Layout */
+        .poster-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        /* Individual Poster Card */
+        .poster {
+            width: 400px;
+            background: #ffffff;
+            border: 4px solid #013a20;
+            border-radius: 20px;
+            padding: 30px 20px;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            page-break-after: always;
+        }
+
+        /* Top Right Table Badge */
+        .table-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #013a20;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 18px;
+            border-bottom-left-radius: 16px;
+            border-top-right-radius: 14px;
+        }
+
+        /* Logo / Icon Area */
+        .logo-icon {
+            font-size: 40px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        /* Restaurant Name Styles */
+        .brand-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #013a20;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-subtitle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin: 8px 0 20px 0;
+        }
+
+        .line {
+            flex-grow: 1;
+            height: 2px;
+            background-color: #013a20;
+        }
+
+        .brand-subtitle {
+            padding: 0 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #013a20;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* QR Code Box */
+        .qr-box {
+            background: #fff;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin: 10px 0;
+        }
+
+        .qr-box img {
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Scan to Order Pill Button */
+        .scan-pill {
+            background-color: #013a20;
+            color: white;
+            width: 90%;
+            padding: 12px;
+            border-radius: 30px;
+            margin: 20px 0 10px 0;
+            box-shadow: 0 4px 10px rgba(1, 58, 32, 0.2);
+        }
+
+        .scan-pill h3 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .scan-pill p {
+            font-size: 11px;
+            font-weight: 400;
+            color: #e2e8f0;
+            margin-top: 2px;
+        }
+
+        /* Footer Section */
+        .footer {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .footer .insta {
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: #013a20;
+        }
+
+        /* Print Media Query for clean PDF saving */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+            .poster-container {
+                gap: 0;
+            }
+            .poster {
+                border: 3px solid #013a20;
+                box-shadow: none;
+                margin: 0 auto;
+                page-break-after: always;
+                width: 100%;
+                max-width: 450px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Control Panel (Hidden on Print) -->
+    <div class="no-print">
+        <h2 style="color: #013a20; margin-bottom: 10px;">New Pizza Hut & Live Cake - Table QR Generator</h2>
+        <p style="color: #555; margin-bottom: 20px;">Tables 1 to 10 generated successfully matching your brand design.</p>
+        <button class="print-btn" onclick="window.print()">🖨️ Download / Print All 10 QR Posters (PDF)</button>
+    </div>
+
+    <!-- Posters Generated Dynamically via JS -->
+    <div class="poster-container" id="posterContainer"></div>
+
+    <script>
+        // Configuration: Base URL you provided
+        const baseUrl = "https://ordernow.newpizzahutnlivecake.in/t/";
+        const container = document.getElementById('posterContainer');
+
+        // Loop to generate 10 Table Posters
+        for (let i = 1; i <= 10; i++) {
+            const tableUrl = `${baseUrl}${i}`;
+
+            // Create Poster Element
+            const poster = document.createElement('div');
+            poster.className = 'poster';
+
+            poster.innerHTML = `
+                <div class="table-badge">TABLE ${i}</div>
+                
+                <div class="logo-icon">🍕</div>
+                <h1 class="brand-title">NEW PIZZA HUT</h1>
+                
+                <div class="brand-subtitle-wrapper">
+                    <div class="line"></div>
+                    <span class="brand-subtitle">& LIVE CAKE</span>
+                    <div class="line"></div>
+                </div>
+
+                <div class="qr-box" id="qrcode-${i}"></div>
+
+                <div class="scan-pill">
+                    <h3>📱 SCAN TO ORDER</h3>
+                    <p>Order will be received at our counter</p>
+                </div>
+
+                <div class="footer">
+                    <div class="insta">📷 Follow us @newpizzahut</div>
+                    <div>❤️ Thanks for supporting local</div>
+                </div>
+            `;
+
+            container.appendChild(poster);
+
+            // Generate QR Code inside the specific div
+            new QRCode(document.getElementById(`qrcode-${i}`), {
+                text: tableUrl,
+                width: 180,
+                height: 180,
+                colorDark: "#013a20",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+    </script>
+</body>
+</html>
